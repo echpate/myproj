@@ -21,6 +21,8 @@ import os
 #conn = None
 _dsqb='countycases.db'
 
+conn = sqlite3.connect(_dsqb)
+
 def connect_to_db(dbpath): 
     conn = None
     try:
@@ -34,7 +36,7 @@ def connect_to_db(dbpath):
 def getcountydata(df):
     countyset = df['county'].unique()
     countyset = [ s.replace(" ","").replace(".","") for s in countyset]
-    conn = sqlite3.connect(_dsqb)
+    #conn = sqlite3.connect(_dsqb)
     cntProcessed=0
     for county in countyset: 
         thisCountydf=df[df['county']==county].copy()
@@ -79,6 +81,11 @@ def main():
     start = datetime.now()
     #conn=connect_to_db('countycases.db')
     
+    countyset = df['county'].unique()
+    countyset = [ s.replace(" ","").replace(".","") for s in countyset]
+    for x in countyset:
+            conn.execute("DROP TABLE IF EXISTS {}".format(x))
+    
     ctx = mp.get_context('spawn')
     pool = ctx.Pool(n_jobs)
 
@@ -88,6 +95,8 @@ def main():
     
     pool.close()
     pool.join()
+    
+    conn.close()
 
     print('Elapsed: {}'.format(datetime.now()-start))
 
