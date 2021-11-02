@@ -26,11 +26,12 @@ from os.path import exists
 
 #conn = None
 _dsqb='countycases2.db'
+conn = sqlite3.connect(_dsqb)
 
 def getcountydata(df):
     countyset = df['county'].unique()
     countyset = [ s.replace(" ","").replace(".","") for s in countyset]
-    conn = sqlite3.connect(_dsqb)
+    #conn = sqlite3.connect(_dsqb)
     cntProcessed=0
     for county in countyset: 
         thisCountydf=df[df['county']==county].copy()
@@ -64,6 +65,8 @@ def main():
     start = datetime.now()
     
     getcountydata(df)
+    
+    conn.close()
 
     print('Elapsed: {}'.format(datetime.now()-start))
 
